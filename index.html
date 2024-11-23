@@ -14,8 +14,9 @@
     body {
       font-family: 'Poppins', sans-serif;
       color: #e0e0e0;
-      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+      background: linear-gradient(135deg, #0f0f0f, #232323);
       overflow-x: hidden;
+      scroll-behavior: smooth;
     }
     a {
       color: #00ffc6;
@@ -27,36 +28,42 @@
 
     /* Hero Section */
     .hero {
-      background: radial-gradient(circle, #001f3f, #000000);
+      background: radial-gradient(circle at center, #001f3f, #000000);
       color: #e0e0e0;
       text-align: center;
-      padding: 5rem 2rem;
+      padding: 6rem 2rem;
       position: relative;
     }
     .hero h1 {
-      font-size: 4rem;
+      font-size: 4.5rem;
       text-transform: uppercase;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       letter-spacing: 3px;
-      text-shadow: 0 4px 10px rgba(0, 255, 198, 0.7);
+      text-shadow: 0 4px 15px rgba(0, 255, 198, 0.8);
+      animation: glow 2s infinite alternate;
+    }
+    @keyframes glow {
+      0% { text-shadow: 0 0 15px rgba(0, 255, 198, 0.8); }
+      100% { text-shadow: 0 0 30px rgba(0, 255, 198, 1); }
     }
     .hero p {
-      font-size: 1.5rem;
-      margin-bottom: 2rem;
+      font-size: 1.8rem;
+      margin-bottom: 3rem;
       color: #cce7ff;
     }
     .hero a {
       padding: 1rem 2.5rem;
-      background: #00ffc6;
+      background: linear-gradient(90deg, #00ffc6, #004e92);
       color: #001f3f;
       font-size: 1.2rem;
       font-weight: bold;
       border-radius: 25px;
       transition: transform 0.3s ease, background 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 255, 198, 0.5);
     }
     .hero a:hover {
-      background: #004e92;
-      color: #00ffc6;
+      background: linear-gradient(90deg, #004e92, #00ffc6);
+      color: #e0e0e0;
       transform: scale(1.1);
     }
 
@@ -66,14 +73,14 @@
       text-align: center;
     }
     .about h2 {
-      font-size: 2.5rem;
+      font-size: 3rem;
       color: #00ffc6;
-      margin-bottom: 1rem;
-      text-shadow: 0 4px 10px rgba(0, 255, 198, 0.5);
+      margin-bottom: 1.5rem;
+      text-shadow: 0 4px 15px rgba(0, 255, 198, 0.6);
     }
     .about p {
       margin: 0 auto 2rem;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       line-height: 1.8;
       max-width: 800px;
       color: #d6d6d6;
@@ -84,13 +91,13 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 2rem;
+      gap: 2.5rem;
       padding: 4rem 5%;
     }
     .feature-box {
-      background: linear-gradient(145deg, #101010, #1a1a1a);
+      background: linear-gradient(145deg, #111111, #1a1a1a);
       border: 1px solid #00ffc6;
-      border-radius: 15px;
+      border-radius: 20px;
       padding: 2rem;
       max-width: 300px;
       text-align: center;
@@ -102,43 +109,48 @@
       box-shadow: 0 15px 40px rgba(0, 255, 198, 0.5);
     }
     .feature-box h3 {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       color: #00ffc6;
       margin-bottom: 1rem;
     }
     .feature-box p {
-      font-size: 1rem;
+      font-size: 1.1rem;
       color: #d6d6d6;
     }
 
     /* CTA Section */
     .cta {
       background: linear-gradient(135deg, #001f3f, #000000);
-      padding: 4rem 2rem;
+      padding: 5rem 2rem;
       text-align: center;
       color: #fff;
     }
     .cta h2 {
-      font-size: 2.5rem;
+      font-size: 3rem;
       color: #00ffc6;
       margin-bottom: 1rem;
+      text-shadow: 0 4px 15px rgba(0, 255, 198, 0.8);
     }
     .cta p {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       margin-bottom: 2rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .cta a {
       padding: 1rem 2.5rem;
-      background: #00ffc6;
+      background: linear-gradient(90deg, #00ffc6, #004e92);
       color: #001f3f;
       font-size: 1.2rem;
       font-weight: bold;
       border-radius: 25px;
       transition: background 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 255, 198, 0.5);
     }
     .cta a:hover {
-      background: #004e92;
-      color: #00ffc6;
+      background: linear-gradient(90deg, #004e92, #00ffc6);
+      color: #e0e0e0;
       transform: scale(1.1);
     }
 
@@ -148,7 +160,11 @@
       padding: 2rem;
       background: #101010;
       color: #cce7ff;
-      font-size: 0.9rem;
+      font-size: 1rem;
+      border-top: 1px solid #00ffc6;
+    }
+    footer p {
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -156,38 +172,38 @@
 
 <div class="hero">
   <h1>Welcome to AILD</h1>
-  <p>The Home of AI Learners and Developers</p>
-  <a href="#get-started">Get Started</a>
+  <p>The Gateway to AI Learning and Development</p>
+  <a href="#about">Get Started</a>
 </div>
 
-<div class="about">
+<div id="about" class="about">
   <h2>About AILD</h2>
-  <p>AILD is the future of AI innovation and collaboration. We bring together learners, creators, and visionaries to unlock AI's potential and redefine what's possible. Join a community where technology meets curiosity, and ideas turn into groundbreaking solutions.</p>
+  <p>AILD is where technology meets creativity. Our mission is to empower AI learners and developers through access to cutting-edge tools, collaborations, and resources. Dive into the world of AI and make your mark on the future.</p>
 </div>
 
 <div class="features">
   <div class="feature-box">
-    <h3>Learn and Innovate</h3>
-    <p>Access cutting-edge tools and resources to master AI concepts and bring your ideas to life.</p>
+    <h3>Learn and Develop</h3>
+    <p>Access cutting-edge tools and resources to master AI and bring your innovations to life.</p>
   </div>
   <div class="feature-box">
-    <h3>Collaborate Globally</h3>
-    <p>Connect with a global community of developers, learners, and industry leaders to solve real-world challenges.</p>
+    <h3>Connect Globally</h3>
+    <p>Join a network of visionaries, learners, and industry experts to solve tomorrow's challenges.</p>
   </div>
   <div class="feature-box">
     <h3>Shape the Future</h3>
-    <p>Be part of a movement that’s transforming industries and creating the AI-driven world of tomorrow.</p>
+    <p>Transform industries and redefine possibilities with advanced AI insights and applications.</p>
   </div>
 </div>
 
 <div class="cta">
-  <h2>Ready to Explore?</h2>
-  <p>Join AILD and start your journey into the future of AI. The possibilities are endless, and the adventure starts now.</p>
-  <a href="https://news.robot.tv/contact">Join Us</a>
+  <h2>Start Your AI Journey Today</h2>
+  <p>Join AILD and become part of a thriving global community of AI enthusiasts and professionals. Together, let's shape the future of artificial intelligence.</p>
+  <a href="https://news.robot.tv/contact">Contact Us to Join Now</a>
 </div>
 
 <footer>
-  <p>&copy; 2024 AILD.org. Empowering the AI-driven future.</p>
+  <p>&copy; 2003-2025 AILD.org | Empowering the AI-Driven Future</p>
 </footer>
 
 </body>
