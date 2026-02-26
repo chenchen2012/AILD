@@ -43,7 +43,7 @@ const queries = [
 
 function decodeXml(s = '') {
   return s
-    .replace(/<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>/g, '$1')
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
