@@ -64,9 +64,9 @@ async function fetchRss(query) {
 }
 
 function parseItems(xml) {
-  const blocks = xml.match(/<item>[\\s\\S]*?<\\/item>/g) || [];
+  const blocks = xml.match(/<item>[\s\S]*?<\/item>/g) || [];
   return blocks.map((b) => ({
-    title: extractTag(b, 'title').replace(/\\s-\\s[^-]+$/, '').trim(),
+    title: extractTag(b, 'title').replace(/\s-\s[^-]+$/, '').trim(),
     link: extractTag(b, 'link'),
     pubDate: extractTag(b, 'pubDate'),
     source: extractTag(b, 'source') || 'Source',
@@ -96,7 +96,7 @@ if (picked.length < 6) {
 
 const sourceText = picked
   .map((i, idx) => `${idx + 1}. ${i.title} | ${i.source} | ${i.link}`)
-  .join('\\n');
+  .join('\n');
 
 const prompt = `You are writing AILD weekly content for executives.
 Create bilingual output in strict JSON (no markdown fences), using the sources below.
@@ -165,7 +165,7 @@ try {
   throw new Error(`JSON parse failed: ${e.message}`);
 }
 
-const sourceListMd = picked.slice(0, 8).map((i) => `- [${i.title}](${i.link}) (${i.source})`).join('\\n');
+const sourceListMd = picked.slice(0, 8).map((i) => `- [${i.title}](${i.link}) (${i.source})`).join('\n');
 
 function renderMd(lang, obj) {
   const title = obj.title?.trim() || `Weekly AI Leadership Brief (${DATE})`;
@@ -175,9 +175,9 @@ function renderMd(lang, obj) {
   const sectionText = (obj.sections || [])
     .map((s) => {
       const bullets = (s.bullets || []).map((b) => `- ${b}`).join('\\n');
-      return `## ${s.heading}\\n\\n${bullets}`;
+      return `## ${s.heading}\n\n${bullets}`;
     })
-    .join('\\n\\n');
+    .join('\n\n');
 
   return `---
 title: ${title}
