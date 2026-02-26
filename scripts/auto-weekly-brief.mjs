@@ -8,11 +8,27 @@ const SLUG = `weekly-ai-leadership-brief-${DATE}`;
 const EN_FILE = path.join(ROOT, 'src/content/docs', `${SLUG}.md`);
 const ZH_FILE = path.join(ROOT, 'src/content/zhdocs', `${SLUG}.md`);
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-if (!OPENAI_API_KEY) {
-  console.error('Missing OPENAI_API_KEY. Add this in GitHub Secrets for auto publishing.');
+const AI_PROVIDER = (process.env.AI_PROVIDER || 'deepseek').toLowerCase();
+const AI_API_KEY =
+  process.env.AI_API_KEY ||
+  (AI_PROVIDER === 'deepseek' ? process.env.DEEPSEEK_API_KEY : process.env.OPENAI_API_KEY);
+if (!AI_API_KEY) {
+  console.error(
+    `Missing API key. Set ${AI_PROVIDER === 'deepseek' ? 'DEEPSEEK_API_KEY' : 'OPENAI_API_KEY'} (or AI_API_KEY).`,
+  );
   process.exit(1);
 }
+
+const API_CONFIG =
+  AI_PROVIDER === 'deepseek'
+    ? {
+        url: 'https://api.deepseek.com/chat/completions',
+        model: process.env.AI_MODEL || 'deepseek-chat',
+      }
+    : {
+        url: 'https://api.openai.com/v1/chat/completions',
+        model: process.env.AI_MODEL || process.env.OPENAI_MODEL || 'gpt-4.1-mini',
+      };
 
 if (fs.existsSync(EN_FILE) || fs.existsSync(ZH_FILE)) {
   console.log(`Weekly brief already exists for ${DATE}.`);
@@ -115,15 +131,16 @@ Output JSON schema:
 
 Sources:\n${sourceText}`;
 
-const response = await fetch('https://api.openai.com/v1/chat/completions', {
+const response = await fetch(API_CONFIG.url, {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${OPENAI_API_KEY}`,
+    Authorization: `Bearer ${AI_API_KEY}`,
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
+    model: API_CONFIG.model,
     temperature: 0.2,
+    max_tokens: 1800,
     messages: [
       { role: 'system', content: 'Return strict JSON only.' },
       { role: 'user', content: prompt },
@@ -133,7 +150,7 @@ const response = await fetch('https://api.openai.com/v1/chat/completions', {
 
 if (!response.ok) {
   const err = await response.text();
-  throw new Error(`OpenAI request failed: ${response.status} ${err}`);
+  throw new Error(`${AI_PROVIDER} request failed: ${response.status} ${err}`);
 }
 
 const data = await response.json();
