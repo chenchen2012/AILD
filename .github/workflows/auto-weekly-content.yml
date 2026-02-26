@@ -2,7 +2,7 @@ name: Auto Weekly Bilingual Content
 
 on:
   schedule:
-    - cron: '0 14 * * 2'
+    - cron: '0 14 * * 1,3,5'
   workflow_dispatch:
 
 permissions:
