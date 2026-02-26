@@ -141,6 +141,7 @@ const response = await fetch(API_CONFIG.url, {
     model: API_CONFIG.model,
     temperature: 0.2,
     max_tokens: 1800,
+    response_format: { type: 'json_object' },
     messages: [
       { role: 'system', content: 'Return strict JSON only.' },
       { role: 'user', content: prompt },
@@ -155,14 +156,32 @@ if (!response.ok) {
 
 const data = await response.json();
 const raw = data.choices?.[0]?.message?.content || '';
-const jsonMatch = raw.match(/\{[\s\S]*\}$/);
-if (!jsonMatch) throw new Error('Model response is not valid JSON payload.');
+function extractJsonPayload(text) {
+  if (!text) return null;
+
+  // Prefer fenced JSON if the model wrapped output in markdown.
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (fenced?.[1]) return fenced[1].trim();
+
+  // Otherwise take the outermost JSON object in the response.
+  const first = text.indexOf('{');
+  const last = text.lastIndexOf('}');
+  if (first !== -1 && last !== -1 && last > first) {
+    return text.slice(first, last + 1).trim();
+  }
+  return null;
+}
+
+const jsonPayload = extractJsonPayload(raw);
+if (!jsonPayload) {
+  throw new Error(`Model response is not valid JSON payload. Raw: ${raw.slice(0, 400)}`);
+}
 
 let parsed;
 try {
-  parsed = JSON.parse(jsonMatch[0]);
+  parsed = JSON.parse(jsonPayload);
 } catch (e) {
-  throw new Error(`JSON parse failed: ${e.message}`);
+  throw new Error(`JSON parse failed: ${e.message}. Raw: ${raw.slice(0, 400)}`);
 }
 
 const sourceListMd = picked.slice(0, 8).map((i) => `- [${i.title}](${i.link}) (${i.source})`).join('\n');
