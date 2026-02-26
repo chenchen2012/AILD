@@ -1,0 +1,158 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const docs = (await getCollection('docs')).sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
+);
+
+const tags = Array.from(new Set(docs.flatMap((d) => d.data.tags))).sort();
+
+const quickStarts = [
+  {
+    title: 'Decision Leadership Launch (60 min)',
+    desc: 'Set executive decision architecture before tool-level expansion.',
+    links: [
+      { href: '/learn/ai-decision-intelligence-stack-executives/', label: 'Decision Intelligence Stack' },
+      { href: '/learn/cognitive-augmentation-for-leaders/', label: 'Cognitive Augmentation for Leaders' },
+      { href: '/learn/ai-assisted-strategic-review-playbook/', label: 'Strategic Review Playbook' },
+    ],
+  },
+  {
+    title: 'Trust and Control (45 min)',
+    desc: 'Define trust thresholds and override rules before scaling decisions.',
+    links: [
+      { href: '/learn/trust-vs-override-framework/', label: 'Trust vs Override Framework' },
+      { href: '/learn/board-ai-governance-briefing/', label: 'Board Governance Briefing' },
+      { href: '/learn/ai-policy-template-smb/', label: 'Policy Template' },
+    ],
+  },
+  {
+    title: 'Executive Workflow Build (45 min)',
+    desc: 'Turn leadership decisions into AI-augmented weekly execution.',
+    links: [
+      { href: '/learn/ai-augmented-executive-workflow/', label: 'AI-Augmented Executive Workflow' },
+      { href: '/learn/executive-decision-memo-template/', label: 'Executive Decision Memo Template' },
+      { href: '/learn/ai-roi-dashboard-and-metrics/', label: 'ROI Dashboard Guide' },
+    ],
+  },
+];
+---
+
+<Layout
+  title="Learn AI Leadership | AILD.org"
+  description="Actionable AI leadership library focused on decision intelligence, cognitive augmentation, governance, and executive execution."
+  canonical="https://aild.org/learn/"
+  active="learn"
+>
+  <section class="hero">
+    <p class="eyebrow">Knowledge hub</p>
+    <h1>High-value AI leadership and decision library</h1>
+    <p class="lead">
+      This page is built for leaders making high-impact decisions. Start with
+      decision frameworks, then move into governance and execution playbooks.
+    </p>
+    <div class="badge-row">
+      <span class="badge">{docs.length} practical guides</span>
+      <span class="badge">Decision + Governance + Executive Workflows</span>
+      <span class="badge">Wiki-linked to templates, cases, and research</span>
+    </div>
+  </section>
+
+  <section class="section grid-3">
+    {quickStarts.map((item) => (
+      <article class="panel">
+        <p class="eyebrow">Quick start</p>
+        <h2>{item.title}</h2>
+        <p>{item.desc}</p>
+        <ul>
+          {item.links.map((l) => (
+            <li><a href={l.href}>{l.label}</a></li>
+          ))}
+        </ul>
+      </article>
+    ))}
+  </section>
+
+  <section class="section panel">
+    <h2>Find Exactly What You Need</h2>
+    <p class="lead">Search by keyword and filter by topic. Results update instantly.</p>
+    <div class="kb-toolbar">
+      <input id="kb-search" class="kb-search" type="search" placeholder="Search guides (e.g., policy, ROI, support, prompt)..." />
+      <div class="kb-filters" id="kb-filters">
+        <button class="kb-chip active" data-tag="all" type="button">All</button>
+        {tags.map((tag) => (
+          <button class="kb-chip" data-tag={tag.toLowerCase()} type="button">{tag}</button>
+        ))}
+      </div>
+      <p class="kb-count"><span id="kb-count">{docs.length}</span> guides shown</p>
+    </div>
+  </section>
+
+  <section class="section article-list" id="kb-list">
+    {
+      docs.map((doc) => (
+        <article class="article-item kb-item" data-tags={doc.data.tags.map((t) => t.toLowerCase()).join(',')}>
+          <p class="tag">{doc.data.tags.join(' | ')}</p>
+          <h2>
+            <a href={`/learn/${doc.slug}/`}>{doc.data.title}</a>
+          </h2>
+          <p>{doc.data.description}</p>
+          <p class="kb-meta">
+            {doc.data.readingTime ? `Read time: ${doc.data.readingTime}` : ''}{doc.data.audience ? ` | Audience: ${doc.data.audience}` : ''}
+          </p>
+          <p>
+            Related:
+            {doc.data.related.map((item) => (
+              <>
+                {' '}
+                <a href={`/learn/${item}/`}>{item.replaceAll('-', ' ')}</a>{' '}
+              </>
+            ))}
+          </p>
+        </article>
+      ))
+    }
+  </section>
+
+  <script is:inline>
+    (() => {
+      const search = document.getElementById('kb-search');
+      const chips = Array.from(document.querySelectorAll('.kb-chip'));
+      const items = Array.from(document.querySelectorAll('.kb-item'));
+      const count = document.getElementById('kb-count');
+      if (!search || !items.length || !count) return;
+
+      let activeTag = 'all';
+
+      const apply = () => {
+        const q = search.value.trim().toLowerCase();
+        let visible = 0;
+
+        items.forEach((item) => {
+          const text = item.textContent.toLowerCase();
+          const tags = (item.getAttribute('data-tags') || '').split(',');
+          const matchTag = activeTag === 'all' || tags.includes(activeTag);
+          const matchQuery = !q || text.includes(q);
+          const show = matchTag && matchQuery;
+          item.classList.toggle('kb-hidden', !show);
+          if (show) visible += 1;
+        });
+
+        count.textContent = String(visible);
+      };
+
+      chips.forEach((chip) => {
+        chip.addEventListener('click', () => {
+          chips.forEach((c) => c.classList.remove('active'));
+          chip.classList.add('active');
+          activeTag = chip.getAttribute('data-tag') || 'all';
+          apply();
+        });
+      });
+
+      search.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Layout>

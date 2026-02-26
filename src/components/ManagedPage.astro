@@ -1,0 +1,122 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { render } from 'astro:content';
+
+interface Card {
+  tag?: string;
+  title: string;
+  text: string;
+  result?: string;
+}
+
+interface Section {
+  heading: string;
+  text?: string;
+  bullets?: string[];
+}
+
+interface ManagedData {
+  title: string;
+  description: string;
+  heroEyebrow: string;
+  heroTitle: string;
+  heroLead: string;
+  primaryCtaLabel?: string;
+  primaryCtaHref?: string;
+  secondaryCtaLabel?: string;
+  secondaryCtaHref?: string;
+  cards?: Card[];
+  sections?: Section[];
+}
+
+interface Props {
+  entry: { slug: string; data: ManagedData };
+  active: string;
+  canonical: string;
+}
+
+const { entry, active, canonical } = Astro.props;
+const { Content } = await render(entry);
+const cards = entry.data.cards ?? [];
+const sections = entry.data.sections ?? [];
+const isCases = entry.slug === 'cases';
+---
+
+<Layout
+  title={entry.data.title}
+  description={entry.data.description}
+  canonical={canonical}
+  active={active}
+>
+  <section class="hero">
+    <p class="eyebrow">{entry.data.heroEyebrow}</p>
+    <h1>{entry.data.heroTitle}</h1>
+    <p class="lead">{entry.data.heroLead}</p>
+    {
+      (entry.data.primaryCtaLabel && entry.data.primaryCtaHref) ||
+      (entry.data.secondaryCtaLabel && entry.data.secondaryCtaHref) ? (
+        <div class="stack">
+          {entry.data.primaryCtaLabel && entry.data.primaryCtaHref && (
+            <a class="btn btn-primary" href={entry.data.primaryCtaHref}>{entry.data.primaryCtaLabel}</a>
+          )}
+          {entry.data.secondaryCtaLabel && entry.data.secondaryCtaHref && (
+            <a class="btn btn-secondary" href={entry.data.secondaryCtaHref}>{entry.data.secondaryCtaLabel}</a>
+          )}
+        </div>
+      ) : null
+    }
+  </section>
+
+  {
+    cards.length > 0 && (
+      <section class={`section article-list ${isCases ? 'cases-grid' : ''}`}>
+        {cards.map((card) => (
+          <article class={`article-item ${isCases ? 'case-card' : ''}`}>
+            {card.tag && <p class="tag">{card.tag}</p>}
+            <h2>{card.title}</h2>
+            <p>{card.text}</p>
+            {card.result && <p class="impact-pill case-impact">{card.result}</p>}
+          </article>
+        ))}
+      </section>
+    )
+  }
+
+  {
+    isCases ? (
+      <section class="section case-method-grid">
+        {sections.map((section) => (
+          <article class="panel case-method-card">
+            <h2>{section.heading}</h2>
+            {section.text && <p>{section.text}</p>}
+            {section.bullets && section.bullets.length > 0 && (
+              <ul>
+                {section.bullets.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))}
+      </section>
+    ) : (
+      sections.map((section) => (
+        <section class="section panel">
+          <h2>{section.heading}</h2>
+          {section.text && <p>{section.text}</p>}
+          {section.bullets && section.bullets.length > 0 && (
+            <ul>
+              {section.bullets.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ))
+    )
+  }
+
+  <section class="section panel">
+    <Content />
+  </section>
+</Layout>

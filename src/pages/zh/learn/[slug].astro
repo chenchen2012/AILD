@@ -1,0 +1,91 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('zhdocs');
+  return docs.map((doc) => ({ params: { slug: doc.slug } }));
+}
+
+const { slug } = Astro.params;
+if (!slug) throw new Error('Missing slug');
+
+const entry = await getEntry('zhdocs', slug);
+if (!entry) throw new Error(`Unknown zh doc: ${slug}`);
+
+const { Content } = await render(entry);
+const canonical = `https://aild.org/zh/learn/${entry.slug}/`;
+const datePublished = new Date(entry.data.pubDate).toISOString();
+const dateModified = new Date(entry.data.updatedDate ?? entry.data.pubDate).toISOString();
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: entry.data.title,
+  description: entry.data.description,
+  datePublished,
+  dateModified,
+  inLanguage: 'zh-CN',
+  mainEntityOfPage: canonical,
+  author: { '@type': 'Organization', name: 'AI Leadership and Development' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'AI Leadership and Development',
+    logo: { '@type': 'ImageObject', url: 'https://aild.org/favicon.svg' },
+  },
+};
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: 'https://aild.org/zh/' },
+    { '@type': 'ListItem', position: 2, name: '知识库', item: 'https://aild.org/zh/learn/' },
+    { '@type': 'ListItem', position: 3, name: entry.data.title, item: canonical },
+  ],
+};
+---
+
+<Layout
+  title={`${entry.data.title} | AILD`}
+  description={entry.data.description}
+  canonical={canonical}
+  active="learn"
+  lang="zh-CN"
+  jsonLd={[articleJsonLd, breadcrumbJsonLd]}
+>
+  <article class="article">
+    <section class="article-hero">
+      <p class="tag">更新于 {entry.data.updatedDate ?? entry.data.pubDate}</p>
+      <h1>{entry.data.title}</h1>
+      <p class="lead">{entry.data.description}</p>
+      <div class="badge-row">
+        {entry.data.tags.map((tag) => <span class="badge">{tag}</span>)}
+        {entry.data.readingTime && <span class="badge">{entry.data.readingTime}</span>}
+        {entry.data.audience && <span class="badge">适用：{entry.data.audience}</span>}
+      </div>
+    </section>
+
+    <div class="article-shell section">
+      <div class="panel article-main">
+        {entry.data.outcomes.length > 0 && (
+          <section class="takeaways">
+            <h3>你将获得</h3>
+            <ul>
+              {entry.data.outcomes.map((item) => <li>{item}</li>)}
+            </ul>
+          </section>
+        )}
+        <Content />
+      </div>
+      <aside class="article-aside">
+        <section class="trust-card">
+          <h3>下一步</h3>
+          <ul class="mini-list">
+            <li><a href="/zh/templates/">使用模板包</a></li>
+            <li><a href="/zh/cases/">参考案例指标</a></li>
+            <li><a href="/zh/contact/">预约领导力咨询</a></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </article>
+</Layout>

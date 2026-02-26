@@ -1,0 +1,26 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="AILD Espanol | Sistema de flujos de IA"
+  description="Pagina de entrada en espanol para AILD: guias, plantillas y control de calidad para equipos SMB."
+  canonical="https://aild.org/es/"
+  lang="es"
+  alternates={[
+    { hreflang: 'en', href: 'https://aild.org/en/' },
+    { hreflang: 'es', href: 'https://aild.org/es/' },
+    { hreflang: 'zh', href: 'https://aild.org/zh/' },
+    { hreflang: 'x-default', href: 'https://aild.org/' },
+  ]}
+>
+  <section class="hero">
+    <p class="eyebrow">Espanol</p>
+    <h1>Construye flujos de IA fiables para tu equipo SMB.</h1>
+    <p class="lead">Esta es la entrada en espanol de AILD. Puedes ir al hub principal para ver el sistema completo.</p>
+    <div class="stack">
+      <a class="btn btn-primary" href="/">Ir al hub principal</a>
+      <a class="btn btn-secondary" href="/learn/">Leer guias</a>
+    </div>
+  </section>
+</Layout>

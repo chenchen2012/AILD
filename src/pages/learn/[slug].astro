@@ -1,0 +1,137 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs');
+  return docs.map((doc) => ({ params: { slug: doc.slug } }));
+}
+
+const { slug } = Astro.params;
+if (!slug) throw new Error('Missing slug');
+
+const entry = await getEntry('docs', slug);
+if (!entry) throw new Error(`Unknown doc: ${slug}`);
+
+const relatedEntries = await Promise.all(entry.data.related.map((s) => getEntry('docs', s)));
+const { Content } = await render(entry);
+const canonical = `https://aild.org/learn/${entry.slug}/`;
+const datePublished = new Date(entry.data.pubDate).toISOString();
+const dateModified = new Date(entry.data.updatedDate ?? entry.data.pubDate).toISOString();
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: entry.data.title,
+  description: entry.data.description,
+  datePublished,
+  dateModified,
+  inLanguage: 'en',
+  mainEntityOfPage: canonical,
+  author: { '@type': 'Organization', name: 'AI Leadership and Development' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'AI Leadership and Development',
+    logo: { '@type': 'ImageObject', url: 'https://aild.org/favicon.svg' },
+  },
+};
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://aild.org/' },
+    { '@type': 'ListItem', position: 2, name: 'Learn', item: 'https://aild.org/learn/' },
+    { '@type': 'ListItem', position: 3, name: entry.data.title, item: canonical },
+  ],
+};
+---
+
+<Layout
+  title={`${entry.data.title} | AILD.org`}
+  description={entry.data.description}
+  canonical={canonical}
+  active="learn"
+  jsonLd={[articleJsonLd, breadcrumbJsonLd]}
+>
+  <article class="article">
+    <section class="article-hero">
+      <p class="tag">Updated {entry.data.updatedDate ?? entry.data.pubDate}</p>
+      <h1>{entry.data.title}</h1>
+      <p class="lead">{entry.data.description}</p>
+      <div class="badge-row">
+        {entry.data.tags.map((tag) => <span class="badge">{tag}</span>)}
+        {entry.data.readingTime && <span class="badge">{entry.data.readingTime}</span>}
+        {entry.data.audience && <span class="badge">For {entry.data.audience}</span>}
+      </div>
+    </section>
+
+    <div class="article-shell section">
+      <div class="panel article-main">
+        <section class="takeaways">
+          <h3>Key Takeaways</h3>
+          <ul>
+            <li>Implement AI as a workflow system, not isolated prompting.</li>
+            <li>Enforce policy and QA checkpoints before scale.</li>
+            <li>Track weekly performance metrics to prove ROI.</li>
+          </ul>
+        </section>
+        {entry.data.outcomes.length > 0 && (
+          <section class="takeaways">
+            <h3>What You Will Get</h3>
+            <ul>
+              {entry.data.outcomes.map((item) => <li>{item}</li>)}
+            </ul>
+          </section>
+        )}
+
+        <Content />
+
+        <section class="panel section">
+          <h2>Related Pages</h2>
+          <ul>
+            {relatedEntries.filter(Boolean).map((rel) => <li><a href={`/learn/${rel.slug}/`}>{rel.data.title}</a></li>)}
+            <li><a href="/playbooks/">Role-based playbooks</a></li>
+            <li><a href="/templates/">Template hub</a></li>
+            <li><a href="/cases/">Case benchmarks</a></li>
+            <li><a href="/research/">Evidence references</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <aside class="article-aside">
+        <section class="trust-card">
+          <h3>Reliability Standard</h3>
+          <ul>
+            <li>Evidence-informed recommendations</li>
+            <li>Implementation-focused workflows</li>
+            <li>Policy and QA controls first</li>
+          </ul>
+        </section>
+        <section class="trust-card">
+          <h3>Citation Rail</h3>
+          <p>Reference evidence used across AILD frameworks.</p>
+          <ul class="mini-list">
+            <li><a href="/research/">Research index</a></li>
+            <li><a href="/research/#market-and-adoption">Market adoption sources</a></li>
+            <li><a href="/research/#workforce-and-firm-execution">Workforce execution studies</a></li>
+          </ul>
+        </section>
+        <section class="trust-card">
+          <h3>Next Actions</h3>
+          <ul>
+            <li><a href="/templates/">Apply template pack</a></li>
+            <li><a href="/cases/">Compare case benchmarks</a></li>
+            <li><a href="/contact/">Request a rollout roadmap</a></li>
+          </ul>
+        </section>
+        <section class="trust-card">
+          <h3>Implementation Sprint</h3>
+          <ul class="mini-list">
+            <li>Day 1: pick one repeated workflow</li>
+            <li>Day 7: install QA + policy checks</li>
+            <li>Day 14: publish first measured result</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </article>
+</Layout>

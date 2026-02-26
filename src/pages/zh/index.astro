@@ -1,0 +1,107 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const docs = (await getCollection('zhdocs')).sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
+);
+const featuredDocs = docs.slice(0, 6);
+---
+
+<Layout
+  title="AI领导力与发展（AILD）"
+  description="AILD（AI领导力与发展）：帮助管理者构建AI时代的决策能力、增强认知与组织执行体系。"
+  canonical="https://aild.org/zh/"
+  active="home"
+  lang="zh-CN"
+>
+  <section class="hero home-hero reveal">
+    <div class="home-hero-grid">
+      <div>
+        <p class="eyebrow">面向AI时代管理者的决策与执行系统</p>
+        <h1>AI领导力与发展（AILD）</h1>
+        <p class="lead">
+          我们关注“如何用AI思考与决策”，而不仅是“如何用AI生成内容”。
+          AILD帮助组织建立可复用的决策框架、信任边界与高质量执行机制。
+        </p>
+        <div class="stack">
+          <a class="btn btn-primary" href="/zh/learn/ai-decision-intelligence-stack-executives/">先看决策智能框架</a>
+          <a class="btn btn-secondary" href="/zh/cases/">查看领导力案例</a>
+        </div>
+      </div>
+      <aside class="signal-panel">
+        <p class="eyebrow">决策操作面板</p>
+        <h2>让 AI 输出进入可追责的决策流程</h2>
+        <ul class="signal-list">
+          <li><strong>先设决策标准：</strong>明确决策权、责任人与质量门槛。</li>
+          <li><strong>再设信任边界：</strong>高风险场景默认人工接管。</li>
+          <li><strong>最后固化节奏：</strong>每周执行“信号-决策-行动-复盘”。</li>
+        </ul>
+        <p class="signal-note">对应 <a href="/zh/playbooks/">手册</a>、<a href="/zh/templates/">模板</a> 与 <a href="/zh/research/">研究</a> 页面。</p>
+      </aside>
+    </div>
+    <div class="metrics home-metrics">
+      <div class="metric"><strong>更快决策周期</strong><span>缩短“复盘到决策”的关键链路</span></div>
+      <div class="metric"><strong>更高决策质量</strong><span>用统一框架降低判断波动</span></div>
+      <div class="metric"><strong>更稳风险控制</strong><span>明确何时信任AI、何时人工接管</span></div>
+    </div>
+  </section>
+
+  <section class="section panel reveal delay-1">
+    <h2>一键切换中英文，构建领导力知识网络</h2>
+    <p>
+      全站提供中英文镜像页面。每篇内容都与相关框架、手册、案例、研究互相连接，
+      形成类似百科的知识网络，兼顾可读性与SEO。
+    </p>
+    <div class="stack">
+      <a class="btn btn-primary" href="/zh/learn/">进入中文领导力知识库</a>
+      <a class="btn btn-secondary" href="/zh/research/">查看研究依据</a>
+    </div>
+  </section>
+
+  <section class="section home-proof reveal delay-2">
+    <article class="panel">
+      <p class="eyebrow">现实落差</p>
+      <h2>为什么很多AI项目看起来很忙，却很难形成战略价值</h2>
+      <p>
+        工具上线很快，但领导系统没有同步升级。没有决策架构，AI产出就会停留在“内容层”而不是“决策层”。
+        AILD提供可落地的管理框架，把判断、治理和执行连成一个系统。
+      </p>
+      <div class="kpi-strip">
+        <div class="kpi"><strong>第1周</strong>决策流映射 + 风险分层</div>
+        <div class="kpi"><strong>第2周</strong>信任/接管规则 + 记录机制</div>
+        <div class="kpi"><strong>第3-4周</strong>高管节奏 + 结果复盘</div>
+      </div>
+    </article>
+    <article class="story-note">
+      <p class="eyebrow">优秀团队的共同做法</p>
+      <ul>
+        <li>把“决策质量”设为AI转型核心指标</li>
+        <li>区分“AI分析建议”与“管理层最终责任”</li>
+        <li>建立每周决策复盘，持续校准判断标准</li>
+      </ul>
+      <p>可继续查看 <a href="/zh/cases/">案例</a> 与 <a href="/zh/research/">研究依据</a>。</p>
+    </article>
+  </section>
+
+  <section class="section">
+    <h2>精选领导力指南</h2>
+    <div class="article-list section home-featured-grid">
+      {
+        featuredDocs.map((doc) => (
+          <article class="article-item home-featured-item">
+            <p class="tag">{doc.data.tags.join(' | ')}</p>
+            <h3><a href={`/zh/learn/${doc.slug}/`}>{doc.data.title}</a></h3>
+            <p>{doc.data.description}</p>
+            <p class="kb-meta">
+              {doc.data.readingTime ? `阅读时长：${doc.data.readingTime}` : ''}{doc.data.audience ? ` | 适用：${doc.data.audience}` : ''}
+            </p>
+          </article>
+        ))
+      }
+    </div>
+    <div class="stack">
+      <a class="btn btn-primary" href="/zh/learn/">浏览全部中文领导力内容</a>
+    </div>
+  </section>
+</Layout>

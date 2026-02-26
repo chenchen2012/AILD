@@ -1,0 +1,127 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const docs = (await getCollection('docs')).sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
+);
+const featuredDocs = docs.slice(0, 6);
+---
+
+<Layout
+  title="AI Leadership and Development (AILD)"
+  description="AILD (AI Leadership and Development): Build decision intelligence, AI-augmented leadership workflows, and measurable execution outcomes."
+  canonical="https://aild.org/"
+  active="home"
+  alternates={[
+    { hreflang: 'en', href: 'https://aild.org/en/' },
+    { hreflang: 'es', href: 'https://aild.org/es/' },
+    { hreflang: 'zh', href: 'https://aild.org/zh/' },
+    { hreflang: 'x-default', href: 'https://aild.org/' },
+  ]}
+>
+  <section class="hero home-hero reveal">
+    <div class="home-hero-grid">
+      <div>
+        <p class="eyebrow">Leadership in the decision intelligence era</p>
+        <h1>AI Leadership and Development (AILD)</h1>
+        <p class="lead">
+          AILD helps leaders think with AI, not just use AI. We turn strategy,
+          judgment, and execution into an AI-augmented operating model with clear
+          decision rights, quality thresholds, and accountability.
+        </p>
+        <div class="stack">
+          <a class="btn btn-primary" href="/learn/ai-decision-intelligence-stack-executives/">Start with Decision Intelligence</a>
+          <a class="btn btn-secondary" href="/cases/">See Leadership Cases</a>
+        </div>
+      </div>
+      <aside class="signal-panel">
+        <p class="eyebrow">Decision operating panel</p>
+        <h2>Move AI output into an accountable decision flow</h2>
+        <ul class="signal-list">
+          <li><strong>Set decision standards first:</strong> define rights, ownership, and quality thresholds.</li>
+          <li><strong>Then set trust boundaries:</strong> default to human takeover in high-risk flows.</li>
+          <li><strong>Institutionalize cadence:</strong> signal -> decision -> action -> review every week.</li>
+        </ul>
+        <p class="signal-note">Linked to <a href="/playbooks/">Playbooks</a>, <a href="/templates/">Templates</a>, and <a href="/research/">Research</a>.</p>
+      </aside>
+    </div>
+    <div class="metrics home-metrics">
+      <div class="metric"><strong>Faster cycles</strong><span>Shorten strategic review-to-decision time</span></div>
+      <div class="metric"><strong>Higher quality</strong><span>Improve decision consistency with clear frameworks</span></div>
+      <div class="metric"><strong>Better control</strong><span>Define when to trust AI vs override it</span></div>
+    </div>
+  </section>
+
+  <section class="section panel reveal delay-1">
+    <h2>Wiki-style leadership knowledge graph, built for action</h2>
+    <p>
+      Every guide links to related decision frameworks, playbooks, cases, and
+      research. This creates compounding SEO authority and helps leaders move
+      from concept to execution quickly.
+    </p>
+    <div class="stack">
+      <a class="btn btn-primary" href="/learn/">Explore the Leadership Library</a>
+      <a class="btn btn-secondary" href="/research/">Review Evidence</a>
+      <a class="btn btn-secondary" href="/en/">English</a>
+      <a class="btn btn-secondary" href="/es/">Espanol</a>
+      <a class="btn btn-secondary" href="/zh/">Chinese</a>
+    </div>
+  </section>
+
+  <section class="section home-proof reveal delay-2">
+    <article class="panel">
+      <p class="eyebrow">Leadership gap</p>
+      <h2>Why many AI programs stall before strategic value appears</h2>
+      <p>
+        Teams buy tools fast, but leadership systems lag behind. Without a
+        decision architecture, AI output remains tactical. AILD closes this gap
+        with practical frameworks for executive judgment and execution.
+      </p>
+      <div class="kpi-strip">
+        <div class="kpi"><strong>Week 1</strong>Decision map + risk tiers</div>
+        <div class="kpi"><strong>Week 2</strong>Trust-vs-override rules + logs</div>
+        <div class="kpi"><strong>Week 3-4</strong>Executive workflow + outcome review cadence</div>
+      </div>
+    </article>
+    <article class="story-note">
+      <p class="eyebrow">What world-class teams do differently</p>
+      <ul>
+        <li>Treat decision quality as the primary AI KPI</li>
+        <li>Separate AI analysis from human accountability</li>
+        <li>Run weekly decision reviews to calibrate judgment</li>
+      </ul>
+      <p>
+        See implementation proofs on <a href="/cases/">Cases</a> and
+        evidence basis on <a href="/research/">Research</a>.
+      </p>
+    </article>
+  </section>
+
+  <section class="section reveal delay-3">
+    <h2>Flagship Leadership Guides</h2>
+    <p class="lead">
+      Library now includes {docs.length} practical guides across leadership
+      decision-making, governance, prompting, execution workflows, and risk.
+    </p>
+    <div class="article-list section home-featured-grid">
+      {
+        featuredDocs.map((doc) => (
+          <article class="article-item home-featured-item">
+            <p class="tag">{doc.data.tags.join(' | ')}</p>
+            <h3>
+              <a href={`/learn/${doc.slug}/`}>{doc.data.title}</a>
+            </h3>
+            <p>{doc.data.description}</p>
+            <p class="kb-meta">
+              {doc.data.readingTime ? `Read time: ${doc.data.readingTime}` : ''}{doc.data.audience ? ` | Audience: ${doc.data.audience}` : ''}
+            </p>
+          </article>
+        ))
+      }
+    </div>
+    <div class="stack">
+      <a class="btn btn-primary" href="/learn/">Browse full leadership knowledge library</a>
+    </div>
+  </section>
+</Layout>

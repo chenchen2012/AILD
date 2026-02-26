@@ -1,0 +1,9 @@
+---
+import { getEntry } from 'astro:content';
+import ManagedPage from '../components/ManagedPage.astro';
+
+const entry = await getEntry('pages', 'cases');
+if (!entry) throw new Error('Missing pages/cases.md');
+---
+
+<ManagedPage entry={entry} active="cases" canonical="https://aild.org/cases/" />

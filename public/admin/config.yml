@@ -1,0 +1,132 @@
+backend:
+  name: git-gateway
+  branch: main
+
+local_backend: true
+
+site_url: https://aild.org
+display_url: https://aild.org
+logo_url: /favicon.svg
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+publish_mode: editorial_workflow
+
+collections:
+  - name: "docs"
+    label: "Knowledge Docs"
+    label_singular: "Doc"
+    folder: "src/content/docs"
+    create: true
+    slug: "{{slug}}"
+    format: "frontmatter"
+    extension: "md"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Publish Date", name: "pubDate", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { label: "Updated Date", name: "updatedDate", widget: "datetime", required: false, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        summary: "{{fields.tag}}"
+        field: { label: "Tag", name: "tag", widget: "string" }
+      - label: "Related Slugs"
+        name: "related"
+        widget: "list"
+        required: false
+        summary: "{{fields.slug}}"
+        field: { label: "Slug", name: "slug", widget: "string" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: "site_pages"
+    label: "Site Pages"
+    files:
+      - name: "about"
+        label: "About Page"
+        file: "src/content/pages/about.md"
+        fields:
+          - { label: "SEO Title", name: "title", widget: "string" }
+          - { label: "SEO Description", name: "description", widget: "text" }
+          - { label: "Hero Eyebrow", name: "heroEyebrow", widget: "string" }
+          - { label: "Hero Title", name: "heroTitle", widget: "string" }
+          - { label: "Hero Lead", name: "heroLead", widget: "text" }
+          - { label: "Primary CTA Label", name: "primaryCtaLabel", widget: "string", required: false }
+          - { label: "Primary CTA Link", name: "primaryCtaHref", widget: "string", required: false }
+          - { label: "Secondary CTA Label", name: "secondaryCtaLabel", widget: "string", required: false }
+          - { label: "Secondary CTA Link", name: "secondaryCtaHref", widget: "string", required: false }
+          - label: "Cards"
+            name: "cards"
+            widget: "list"
+            fields:
+              - { label: "Tag", name: "tag", widget: "string", required: false }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Text", name: "text", widget: "text" }
+          - label: "Sections"
+            name: "sections"
+            widget: "list"
+            fields:
+              - { label: "Heading", name: "heading", widget: "string" }
+              - { label: "Text", name: "text", widget: "text", required: false }
+              - label: "Bullets"
+                name: "bullets"
+                widget: "list"
+                required: false
+                field: { label: "Bullet", name: "bullet", widget: "string" }
+          - { label: "Body", name: "body", widget: "markdown", required: false }
+
+      - name: "cases"
+        label: "Cases Page"
+        file: "src/content/pages/cases.md"
+        fields:
+          - { label: "SEO Title", name: "title", widget: "string" }
+          - { label: "SEO Description", name: "description", widget: "text" }
+          - { label: "Hero Eyebrow", name: "heroEyebrow", widget: "string" }
+          - { label: "Hero Title", name: "heroTitle", widget: "string" }
+          - { label: "Hero Lead", name: "heroLead", widget: "text" }
+          - label: "Cards"
+            name: "cards"
+            widget: "list"
+            fields:
+              - { label: "Tag", name: "tag", widget: "string", required: false }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Text", name: "text", widget: "text" }
+          - label: "Sections"
+            name: "sections"
+            widget: "list"
+            fields:
+              - { label: "Heading", name: "heading", widget: "string" }
+              - { label: "Text", name: "text", widget: "text", required: false }
+              - label: "Bullets"
+                name: "bullets"
+                widget: "list"
+                required: false
+                field: { label: "Bullet", name: "bullet", widget: "string" }
+          - { label: "Body", name: "body", widget: "markdown", required: false }
+
+      - name: "contact"
+        label: "Contact Page"
+        file: "src/content/pages/contact.md"
+        fields:
+          - { label: "SEO Title", name: "title", widget: "string" }
+          - { label: "SEO Description", name: "description", widget: "text" }
+          - { label: "Hero Eyebrow", name: "heroEyebrow", widget: "string" }
+          - { label: "Hero Title", name: "heroTitle", widget: "string" }
+          - { label: "Hero Lead", name: "heroLead", widget: "text" }
+          - { label: "Primary CTA Label", name: "primaryCtaLabel", widget: "string", required: false }
+          - { label: "Primary CTA Link", name: "primaryCtaHref", widget: "string", required: false }
+          - { label: "Secondary CTA Label", name: "secondaryCtaLabel", widget: "string", required: false }
+          - { label: "Secondary CTA Link", name: "secondaryCtaHref", widget: "string", required: false }
+          - label: "Sections"
+            name: "sections"
+            widget: "list"
+            fields:
+              - { label: "Heading", name: "heading", widget: "string" }
+              - { label: "Text", name: "text", widget: "text", required: false }
+              - label: "Bullets"
+                name: "bullets"
+                widget: "list"
+                required: false
+                field: { label: "Bullet", name: "bullet", widget: "string" }
+          - { label: "Body", name: "body", widget: "markdown", required: false }

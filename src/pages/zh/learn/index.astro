@@ -1,0 +1,145 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const docs = (await getCollection('zhdocs')).sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
+);
+
+const tags = Array.from(new Set(docs.flatMap((d) => d.data.tags))).sort();
+
+const quickStarts = [
+  {
+    title: '决策型领导启动路径（60分钟）',
+    desc: '先搭建管理层决策框架，再扩展到组织执行。',
+    links: [
+      { href: '/zh/learn/ai-decision-intelligence-stack-executives/', label: '管理者决策智能框架' },
+      { href: '/zh/learn/cognitive-augmentation-for-leaders/', label: '管理者认知增强指南' },
+      { href: '/zh/learn/ai-assisted-strategic-review-playbook/', label: 'AI战略复盘手册' },
+    ],
+  },
+  {
+    title: '信任与人工接管路径（45分钟）',
+    desc: '先定义“何时信任AI、何时人工接管”，再扩展使用范围。',
+    links: [
+      { href: '/zh/learn/trust-vs-override-framework/', label: '信任与接管决策框架' },
+      { href: '/zh/learn/board-ai-governance-briefing/', label: '董事会AI治理简报框架' },
+      { href: '/zh/learn/ai-policy-template-smb/', label: '政策模板' },
+    ],
+  },
+  {
+    title: '高管执行系统路径（45分钟）',
+    desc: '把领导层决策转成AI增强的周节奏执行。',
+    links: [
+      { href: '/zh/learn/ai-augmented-executive-workflow/', label: 'AI增强高管工作流' },
+      { href: '/zh/learn/executive-decision-memo-template/', label: '高管AI决策备忘录模板' },
+      { href: '/zh/learn/ai-roi-dashboard-and-metrics/', label: 'ROI看板指南' },
+    ],
+  },
+];
+---
+
+<Layout
+  title="中文知识库 | AILD"
+  description="AILD中文知识库：聚焦AI领导力与发展，覆盖决策智能、认知增强、治理与执行体系。"
+  canonical="https://aild.org/zh/learn/"
+  active="learn"
+  lang="zh-CN"
+>
+  <section class="hero">
+    <p class="eyebrow">中文知识库</p>
+    <h1>AI领导力与决策内容中心</h1>
+    <p class="lead">先看决策框架，再进入治理与执行。每篇内容都面向真实管理场景。</p>
+    <div class="badge-row">
+      <span class="badge">{docs.length} 篇实战指南</span>
+      <span class="badge">决策 + 治理 + 高管工作流</span>
+      <span class="badge">与模板、案例、研究联动</span>
+    </div>
+  </section>
+
+  <section class="section grid-3">
+    {quickStarts.map((item) => (
+      <article class="panel">
+        <p class="eyebrow">快速路径</p>
+        <h2>{item.title}</h2>
+        <p>{item.desc}</p>
+        <ul>
+          {item.links.map((l) => (
+            <li><a href={l.href}>{l.label}</a></li>
+          ))}
+        </ul>
+      </article>
+    ))}
+  </section>
+
+  <section class="section panel">
+    <h2>快速找到你需要的内容</h2>
+    <p class="lead">支持关键词搜索与标签筛选，结果即时更新。</p>
+    <div class="kb-toolbar">
+      <input id="kb-search" class="kb-search" type="search" placeholder="搜索关键词（如：治理、ROI、客服、提示词）..." />
+      <div class="kb-filters" id="kb-filters">
+        <button class="kb-chip active" data-tag="all" type="button">全部</button>
+        {tags.map((tag) => (
+          <button class="kb-chip" data-tag={tag.toLowerCase()} type="button">{tag}</button>
+        ))}
+      </div>
+      <p class="kb-count">当前显示 <span id="kb-count">{docs.length}</span> 篇</p>
+    </div>
+  </section>
+
+  <section class="section article-list" id="kb-list">
+    {
+      docs.map((doc) => (
+        <article class="article-item kb-item" data-tags={doc.data.tags.map((t) => t.toLowerCase()).join(',')}>
+          <p class="tag">{doc.data.tags.join(' | ')}</p>
+          <h2><a href={`/zh/learn/${doc.slug}/`}>{doc.data.title}</a></h2>
+          <p>{doc.data.description}</p>
+          <p class="kb-meta">
+            {doc.data.readingTime ? `阅读时长：${doc.data.readingTime}` : ''}{doc.data.audience ? ` | 适用：${doc.data.audience}` : ''}
+          </p>
+        </article>
+      ))
+    }
+  </section>
+
+  <script is:inline>
+    (() => {
+      const search = document.getElementById('kb-search');
+      const chips = Array.from(document.querySelectorAll('.kb-chip'));
+      const items = Array.from(document.querySelectorAll('.kb-item'));
+      const count = document.getElementById('kb-count');
+      if (!search || !items.length || !count) return;
+
+      let activeTag = 'all';
+
+      const apply = () => {
+        const q = search.value.trim().toLowerCase();
+        let visible = 0;
+
+        items.forEach((item) => {
+          const text = item.textContent.toLowerCase();
+          const tags = (item.getAttribute('data-tags') || '').split(',');
+          const matchTag = activeTag === 'all' || tags.includes(activeTag);
+          const matchQuery = !q || text.includes(q);
+          const show = matchTag && matchQuery;
+          item.classList.toggle('kb-hidden', !show);
+          if (show) visible += 1;
+        });
+
+        count.textContent = String(visible);
+      };
+
+      chips.forEach((chip) => {
+        chip.addEventListener('click', () => {
+          chips.forEach((c) => c.classList.remove('active'));
+          chip.classList.add('active');
+          activeTag = chip.getAttribute('data-tag') || 'all';
+          apply();
+        });
+      });
+
+      search.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Layout>

@@ -1,0 +1,17 @@
+{
+  "name": "aild-org-site",
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "content:refresh": "node scripts/content-refresh-check.mjs",
+    "content:auto-weekly": "node scripts/auto-weekly-brief.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.6.0",
+    "astro": "^5.17.1"
+  }
+}

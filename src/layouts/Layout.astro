@@ -1,0 +1,198 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  active?: string;
+  lang?: string;
+  alternates?: { hreflang: string; href: string }[];
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
+}
+
+const {
+  title,
+  description = 'AILD (AI Leadership and Development) helps leaders build AI decision capability, governance systems, and measurable execution outcomes.',
+  canonical,
+  active = '',
+  lang = 'en',
+  alternates = [],
+  jsonLd,
+} = Astro.props;
+
+const pathname = Astro.url.pathname;
+const isZh = pathname === '/zh' || pathname.startsWith('/zh/');
+const isLanguageLanding =
+  pathname === '/en' || pathname === '/en/' || pathname === '/es' || pathname === '/es/';
+const makeLocalizedPath = (basePath: string) => {
+  if (!isZh) return basePath;
+  if (basePath === '/') return '/zh/';
+  return `/zh${basePath}`;
+};
+const enPath = isZh ? pathname.replace(/^\/zh/, '') || '/' : pathname;
+const zhPath = isZh ? pathname : pathname === '/' ? '/zh/' : `/zh${pathname}`;
+const brandFullName = 'AI Leadership and Development';
+const brandHref = isZh ? '/zh/' : '/';
+const siteUrl = 'https://aild.org';
+
+const autoAlternates =
+  alternates.length > 0
+    ? alternates
+    : isLanguageLanding
+      ? []
+      : [
+          { hreflang: 'en', href: `${siteUrl}${enPath}` },
+          { hreflang: 'zh-CN', href: `${siteUrl}${zhPath}` },
+          { hreflang: 'zh', href: `${siteUrl}${zhPath}` },
+          { hreflang: 'x-default', href: `${siteUrl}${enPath}` },
+        ];
+
+const baseJsonLd: Array<Record<string, unknown>> = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'AI Leadership and Development',
+    alternateName: 'AILD',
+    url: siteUrl,
+    logo: `${siteUrl}/favicon.svg`,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'AI Leadership and Development',
+    url: siteUrl,
+    inLanguage: ['en', 'zh-CN'],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: canonical ?? `${siteUrl}${pathname}`,
+    inLanguage: lang,
+  },
+];
+
+const pageJsonLd = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
+const allJsonLd = [...baseJsonLd, ...pageJsonLd];
+
+const nav = [
+  { href: '/', en: 'Home', zh: '首页', key: 'home' },
+  { href: '/learn/', en: 'Learn', zh: '知识库', key: 'learn' },
+  { href: '/playbooks/', en: 'Playbooks', zh: '手册', key: 'playbooks' },
+  { href: '/templates/', en: 'Templates', zh: '模板', key: 'templates' },
+  { href: '/cases/', en: 'Cases', zh: '案例', key: 'cases' },
+  { href: '/research/', en: 'Research', zh: '研究', key: 'research' },
+  { href: '/about/', en: 'About', zh: '关于', key: 'about' },
+  { href: '/contact/', en: 'Contact', zh: '联系', key: 'contact' },
+];
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index,follow" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {autoAlternates.map((alt) => <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />)}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    {allJsonLd.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}
+    <script is:inline>
+      (() => {
+        const ua = (navigator.userAgent || '').toLowerCase();
+        if (/(bot|crawl|spider|slurp|bingpreview|googlebot|baiduspider|yandex)/.test(ua)) return;
+
+        const path = window.location.pathname;
+        const skip =
+          path.startsWith('/admin') ||
+          path.startsWith('/uploads') ||
+          path.endsWith('.xml') ||
+          path.endsWith('.txt') ||
+          path.endsWith('.ico') ||
+          path.endsWith('.svg');
+        if (skip) return;
+
+        const saved = localStorage.getItem('aild_lang_pref');
+        const autoDone = localStorage.getItem('aild_lang_auto_done');
+        const isZhPath = path === '/zh' || path.startsWith('/zh/');
+        const enPath = isZhPath ? (path.replace(/^\/zh/, '') || '/') : path;
+        const zhPath = isZhPath ? path : path === '/' ? '/zh/' : `/zh${path}`;
+
+        if (saved === 'zh' && !isZhPath) {
+          window.location.replace(zhPath);
+          return;
+        }
+        if (saved === 'en' && isZhPath) {
+          window.location.replace(enPath);
+          return;
+        }
+
+        if (autoDone === '1') return;
+        const lang = (navigator.language || '').toLowerCase();
+        if (lang.startsWith('zh') && !isZhPath) {
+          localStorage.setItem('aild_lang_auto_done', '1');
+          window.location.replace(zhPath);
+          return;
+        }
+        if (!lang.startsWith('zh') && isZhPath) {
+          localStorage.setItem('aild_lang_auto_done', '1');
+          window.location.replace(enPath);
+          return;
+        }
+        localStorage.setItem('aild_lang_auto_done', '1');
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrapper header-row">
+        <a class="brand" href={brandHref} aria-label={`AILD | ${brandFullName}`}>
+          <span class="brand-mark">AILD</span>
+          <span class="brand-divider" aria-hidden="true"></span>
+          <span class="brand-full">{brandFullName}</span>
+        </a>
+        <nav class="nav-links" aria-label="Main navigation">
+          {
+            nav.map((item) => (
+              <a class={active === item.key ? 'active' : ''} href={makeLocalizedPath(item.href)}>
+                {isZh ? item.zh : item.en}
+              </a>
+            ))
+          }
+        </nav>
+        <div class="lang-switch" aria-label="Language switcher">
+          <a class={!isZh ? 'active' : ''} href={enPath} data-lang-set="en">EN</a>
+          <a class={isZh ? 'active' : ''} href={zhPath} data-lang-set="zh">中文</a>
+        </div>
+      </div>
+    </header>
+    <main class="page wrapper">
+      <slot />
+    </main>
+    <footer class="footer">
+      <div class="wrapper">© {new Date().getFullYear()} AILD.org | AI Leadership and Development</div>
+    </footer>
+    <script is:inline>
+      (() => {
+        document.querySelectorAll('[data-lang-set]').forEach((el) => {
+          el.addEventListener('click', () => {
+            const lang = el.getAttribute('data-lang-set');
+            if (lang) {
+              localStorage.setItem('aild_lang_pref', lang);
+              localStorage.setItem('aild_lang_auto_done', '1');
+            }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

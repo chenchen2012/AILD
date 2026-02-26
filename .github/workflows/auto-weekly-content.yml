@@ -1,0 +1,36 @@
+name: Auto Weekly Bilingual Content
+
+on:
+  schedule:
+    - cron: '0 14 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate weekly EN+ZH brief
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: gpt-4.1-mini
+        run: node scripts/auto-weekly-brief.mjs
+
+      - name: Build check
+        run: npm ci && npm run build
+
+      - name: Commit and push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore(content): auto-publish weekly bilingual AI leadership brief'
+          file_pattern: src/content/docs/*.md src/content/zhdocs/*.md
