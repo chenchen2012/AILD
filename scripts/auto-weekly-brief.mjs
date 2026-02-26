@@ -191,6 +191,7 @@ function renderMd(lang, obj) {
   const description = obj.description?.trim() || 'Weekly executive brief for AI leadership and decision-making.';
   const readingTime = lang === 'en' ? '8 min' : '8分钟';
   const audience = lang === 'en' ? 'Executive team, strategy leads, operations leads' : '高管团队、战略负责人、运营负责人';
+  const q = (v) => JSON.stringify(String(v ?? ''));
   const sectionText = (obj.sections || [])
     .map((s) => {
       const bullets = (s.bullets || []).map((b) => `- ${b}`).join('\\n');
@@ -199,17 +200,17 @@ function renderMd(lang, obj) {
     .join('\n\n');
 
   return `---
-title: ${title}
-description: ${description}
+title: ${q(title)}
+description: ${q(description)}
 pubDate: '${DATE}'
 updatedDate: '${DATE}'
 tags: ['weekly-brief', 'leadership', 'research']
 related: ['ai-decision-intelligence-stack-executives', 'trust-vs-override-framework', 'board-ai-governance-briefing']
-audience: ${audience}
-readingTime: ${readingTime}
+audience: ${q(audience)}
+readingTime: ${q(readingTime)}
 outcomes:
-  - ${lang === 'en' ? 'Weekly executive signal summary' : '每周管理层信号摘要'}
-  - ${lang === 'en' ? 'Concrete decision actions for the next 7 days' : '未来7天可执行决策动作'}
+  - ${q(lang === 'en' ? 'Weekly executive signal summary' : '每周管理层信号摘要')}
+  - ${q(lang === 'en' ? 'Concrete decision actions for the next 7 days' : '未来7天可执行决策动作')}
 ---
 
 ${sectionText}
